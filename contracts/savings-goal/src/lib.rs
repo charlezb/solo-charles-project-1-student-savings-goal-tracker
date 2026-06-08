@@ -5,12 +5,13 @@
 //! simple (plain integer state, no token transfers) so it always works in a live
 //! demo. See the README for how to extend it to move real XLM/USDC.
 
-use soroban_sdk::{contract, contracterror, contractimpl, contracttype, Env};
+use soroban_sdk::{contract, contracterror, contractimpl, contracttype, Env, String};
 
 /// Snapshot of the goal, returned to the frontend.
 #[contracttype]
 #[derive(Clone)]
 pub struct State {
+    pub name: String,
     pub saved: i128,
     pub target: i128,
 }
@@ -18,6 +19,7 @@ pub struct State {
 /// Keys for the contract's instance storage.
 #[contracttype]
 pub enum DataKey {
+    Name,
     Saved,
     Target,
 }
@@ -37,13 +39,14 @@ pub struct SavingsGoalContract;
 #[contractimpl]
 impl SavingsGoalContract {
     /// Set the savings target. Can only be called once.
-    pub fn init(env: Env, target: i128) -> Result<(), Error> {
+    pub fn init(env: Env, name: String, target: i128) -> Result<(), Error> {
         if env.storage().instance().has(&DataKey::Target) {
             return Err(Error::AlreadyInitialized);
         }
         if target <= 0 {
             return Err(Error::InvalidAmount);
         }
+        env.storage().instance().set(&DataKey::Name, &name);
         env.storage().instance().set(&DataKey::Target, &target);
         env.storage().instance().set(&DataKey::Saved, &0i128);
         env.storage().instance().extend_ttl(1000, 5000);
@@ -68,6 +71,11 @@ impl SavingsGoalContract {
     /// Read the current saved + target. Returns zeros if not initialised yet.
     pub fn get_state(env: Env) -> State {
         State {
+            name: env
+                .storage()
+                .instance()
+                .get(&DataKey::Name)
+                .unwrap_or(String::from_str(&env, "")),
             saved: env.storage().instance().get(&DataKey::Saved).unwrap_or(0),
             target: env.storage().instance().get(&DataKey::Target).unwrap_or(0),
         }

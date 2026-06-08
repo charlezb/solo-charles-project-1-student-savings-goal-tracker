@@ -32,12 +32,12 @@ Write-Host "Deploying to $Network..."
 $ContractId = (stellar contract deploy --wasm $Wasm --source-account $Identity --network $Network).Trim()
 Write-Host "Deployed contract ID: $ContractId"
 
-# 4. Initialise the savings goal (target = 1000). Ignore error if already initialised.
-Write-Host "Initialising savings goal (target 1000)..."
+# 4. Initialise the savings goal. Ignore error if already initialised.
+Write-Host "Initialising savings goal (Laptop Fund, target 1000)..."
 try {
-  stellar contract invoke --id $ContractId --source-account $Identity --network $Network -- init --target 1000
+  stellar contract invoke --id $ContractId --source-account $Identity --network $Network -- init --name "Laptop Fund" --target 1000
 } catch {
-  Write-Host "(init skipped — contract may already be initialised)"
+  Write-Host "(init skipped - contract may already be initialised)"
 }
 
 # 5. Write NEXT_PUBLIC_CONTRACT_ID into web\.env.local

@@ -1,6 +1,6 @@
 #![cfg(test)]
 use super::*;
-use soroban_sdk::Env;
+use soroban_sdk::{Env, String};
 
 fn setup(env: &Env) -> SavingsGoalContractClient {
     let contract_id = env.register(SavingsGoalContract, ());
@@ -11,9 +11,11 @@ fn setup(env: &Env) -> SavingsGoalContractClient {
 fn init_then_contribute_tracks_total() {
     let env = Env::default();
     let client = setup(&env);
+    let name = String::from_str(&env, "Laptop Fund");
 
-    client.init(&1000);
+    client.init(&name, &1000);
     let state = client.get_state();
+    assert_eq!(state.name, name);
     assert_eq!(state.target, 1000);
     assert_eq!(state.saved, 0);
 
@@ -30,6 +32,7 @@ fn get_state_before_init_is_zero() {
     let env = Env::default();
     let client = setup(&env);
     let state = client.get_state();
+    assert_eq!(state.name, String::from_str(&env, ""));
     assert_eq!(state.saved, 0);
     assert_eq!(state.target, 0);
 }
@@ -38,8 +41,12 @@ fn get_state_before_init_is_zero() {
 fn double_init_fails() {
     let env = Env::default();
     let client = setup(&env);
-    client.init(&1000);
-    assert_eq!(client.try_init(&500), Err(Ok(Error::AlreadyInitialized)));
+    let name = String::from_str(&env, "Laptop Fund");
+    client.init(&name, &1000);
+    assert_eq!(
+        client.try_init(&name, &500),
+        Err(Ok(Error::AlreadyInitialized))
+    );
 }
 
 #[test]
@@ -53,7 +60,8 @@ fn contribute_before_init_fails() {
 fn rejects_non_positive_amounts() {
     let env = Env::default();
     let client = setup(&env);
-    client.init(&1000);
+    let name = String::from_str(&env, "Laptop Fund");
+    client.init(&name, &1000);
     assert_eq!(client.try_contribute(&0), Err(Ok(Error::InvalidAmount)));
     assert_eq!(client.try_contribute(&-5), Err(Ok(Error::InvalidAmount)));
 }

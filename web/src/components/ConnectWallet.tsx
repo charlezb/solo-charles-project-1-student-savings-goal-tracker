@@ -20,17 +20,17 @@ export default function ConnectWallet({
 
   if (publicKey) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <button
           onClick={copy}
           title="Copy full address"
-          className="rounded bg-gray-100 px-3 py-1 font-mono text-sm text-gray-700 transition-colors hover:bg-gray-200"
+          className="rounded-full border border-gray-200 bg-white px-3 py-2 font-mono text-xs font-medium text-gray-700 shadow-sm transition hover:border-gray-300 hover:text-gray-950 focus:outline-none focus:ring-4 focus:ring-gray-200"
         >
-          {copied ? 'Copied!' : `${publicKey.slice(0, 6)}…${publicKey.slice(-6)}`}
+          {copied ? 'Copied' : `${publicKey.slice(0, 6)}...${publicKey.slice(-6)}`}
         </button>
         <button
           onClick={disconnect}
-          className="text-sm text-red-500 hover:underline"
+          className="rounded-full px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-4 focus:ring-red-100"
         >
           Disconnect
         </button>
@@ -43,11 +43,11 @@ export default function ConnectWallet({
       <button
         onClick={connect}
         disabled={connecting}
-        className="rounded bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+        className="rounded-full bg-gray-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {connecting ? 'Connecting…' : 'Connect Freighter'}
+        {connecting ? 'Connecting...' : 'Connect Freighter'}
       </button>
-      {error && <p className="mt-2 max-w-xs text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-2 max-w-xs text-sm text-red-600">{error}</p>}
     </div>
   );
 }

@@ -15,6 +15,7 @@ import { server, NETWORK_PASSPHRASE, CONTRACT_ID } from './stellar';
 const READ_SOURCE = 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5';
 
 export interface SavingsState {
+  name: string;
   saved: number;
   target: number;
 }
@@ -42,10 +43,49 @@ export async function readSavingsState(): Promise<SavingsState> {
   }
 
   const state = scValToNative(sim.result.retval) as {
+    name: string;
     saved: bigint;
     target: bigint;
   };
-  return { saved: Number(state.saved), target: Number(state.target) };
+  return {
+    name: state.name,
+    saved: Number(state.saved),
+    target: Number(state.target),
+  };
+}
+
+/**
+ * Build + simulate + assemble an unsigned `init(name, target)` invocation,
+ * returning the prepared XDR ready for Freighter to sign.
+ */
+export async function buildInitGoalXDR(
+  sender: string,
+  name: string,
+  target: number,
+): Promise<string> {
+  const contract = new Contract(CONTRACT_ID);
+  const account = await server.getAccount(sender);
+
+  const tx = new TransactionBuilder(account, {
+    fee: BASE_FEE,
+    networkPassphrase: NETWORK_PASSPHRASE,
+  })
+    .addOperation(
+      contract.call(
+        'init',
+        nativeToScVal(name, { type: 'string' }),
+        nativeToScVal(BigInt(Math.trunc(target)), { type: 'i128' }),
+      ),
+    )
+    .setTimeout(30)
+    .build();
+
+  const sim = await server.simulateTransaction(tx);
+  if (!rpc.Api.isSimulationSuccess(sim)) {
+    throw new Error('Simulation failed — the goal could not be created.');
+  }
+
+  return rpc.assembleTransaction(tx, sim).build().toXDR();
 }
 
 /**

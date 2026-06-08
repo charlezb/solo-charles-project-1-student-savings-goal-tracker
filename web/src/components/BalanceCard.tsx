@@ -14,11 +14,18 @@ export default function BalanceCard({
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
     fetchBalances(publicKey)
-      .then((b) => active && setBalances(b))
-      .catch(() => active && setBalances(null))
-      .finally(() => active && setLoading(false));
+      .then((b) => {
+        if (!active) return;
+        setBalances(b);
+      })
+      .catch(() => {
+        if (!active) return;
+        setBalances(null);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
     return () => {
       active = false;
     };
@@ -26,34 +33,42 @@ export default function BalanceCard({
 
   if (loading) {
     return (
-      <div className="mt-4 grid animate-pulse grid-cols-2 gap-4">
-        <div className="h-20 rounded bg-gray-200" />
-        <div className="h-20 rounded bg-gray-200" />
+      <div className="grid animate-pulse grid-cols-2 gap-3">
+        <div className="h-24 rounded-2xl bg-gray-100" />
+        <div className="h-24 rounded-2xl bg-gray-100" />
       </div>
     );
   }
 
   if (balances && !balances.funded) {
     return (
-      <p className="mt-4 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-        This account isn’t funded yet. Click “Fund with Friendbot” above.
+      <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+        This account is not funded yet. Use Friendbot to add testnet XLM.
       </p>
     );
   }
 
   if (!balances) {
-    return <p className="mt-4 text-sm text-red-500">Failed to load balances.</p>;
+    return (
+      <p className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        Failed to load balances.
+      </p>
+    );
   }
 
   return (
-    <div className="mt-4 grid grid-cols-2 gap-4">
-      <div className="rounded border border-gray-200 bg-white p-4">
-        <p className="text-xs uppercase tracking-wide text-gray-500">XLM</p>
-        <p className="text-2xl font-bold text-gray-900">{balances.xlm}</p>
+    <div className="grid grid-cols-2 gap-3">
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 transition hover:-translate-y-0.5 hover:border-gray-300">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+          XLM
+        </p>
+        <p className="mt-2 text-2xl font-semibold text-gray-950">{balances.xlm}</p>
       </div>
-      <div className="rounded border border-gray-200 bg-white p-4">
-        <p className="text-xs uppercase tracking-wide text-gray-500">USDC</p>
-        <p className="text-2xl font-bold text-gray-900">{balances.usdc}</p>
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 transition hover:-translate-y-0.5 hover:border-gray-300">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+          USDC
+        </p>
+        <p className="mt-2 text-2xl font-semibold text-gray-950">{balances.usdc}</p>
       </div>
     </div>
   );

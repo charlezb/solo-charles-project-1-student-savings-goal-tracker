@@ -18,13 +18,13 @@ type Status =
   | 'error';
 
 const STATUS_LABEL: Record<Status, string> = {
-  idle: 'Send',
-  building: 'Building transaction…',
-  signing: 'Waiting for Freighter…',
-  submitting: 'Submitting…',
-  polling: 'Confirming on-chain…',
-  success: 'Send',
-  error: 'Send',
+  idle: 'Send payment',
+  building: 'Building...',
+  signing: 'Waiting for Freighter...',
+  submitting: 'Submitting...',
+  polling: 'Confirming...',
+  success: 'Send payment',
+  error: 'Send payment',
 };
 
 export default function SendPayment({
@@ -77,16 +77,24 @@ export default function SendPayment({
   };
 
   return (
-    <div className="mt-6 rounded border border-gray-200 bg-white p-6">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">Send Payment</h2>
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div className="mb-5">
+        <p className="text-sm font-semibold uppercase tracking-wide text-gray-400">
+          Optional demo
+        </p>
+        <h2 className="mt-1 text-xl font-semibold text-gray-950">Send Payment</h2>
+      </div>
 
       <div className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm text-gray-600">Asset</label>
+          <label htmlFor="payment-asset" className="mb-2 block text-sm font-medium text-gray-700">
+            Asset
+          </label>
           <select
+            id="payment-asset"
             value={asset}
             onChange={(e) => setAsset(e.target.value as AssetCode)}
-            className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900"
+            className="min-h-11 w-full rounded-xl border border-gray-300 bg-white px-3 text-gray-950 shadow-sm transition hover:border-gray-400 focus:border-gray-950 focus:outline-none focus:ring-4 focus:ring-gray-200"
           >
             <option value="XLM">XLM</option>
             <option value="USDC">USDC (needs a trustline)</option>
@@ -94,54 +102,62 @@ export default function SendPayment({
         </div>
 
         <div>
-          <label className="mb-1 block text-sm text-gray-600">
+          <label
+            htmlFor="payment-destination"
+            className="mb-2 block text-sm font-medium text-gray-700"
+          >
             Destination address
           </label>
           <input
+            id="payment-destination"
             type="text"
-            placeholder="G… (must be an existing funded testnet account)"
+            placeholder="G... funded testnet account"
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900"
+            className="min-h-11 w-full rounded-xl border border-gray-300 bg-white px-3 font-mono text-sm text-gray-950 shadow-sm transition placeholder:text-gray-400 hover:border-gray-400 focus:border-gray-950 focus:outline-none focus:ring-4 focus:ring-gray-200"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm text-gray-600">Amount</label>
+          <label htmlFor="payment-amount" className="mb-2 block text-sm font-medium text-gray-700">
+            Amount
+          </label>
           <input
+            id="payment-amount"
             type="number"
+            min="0"
             placeholder="0.00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded border border-gray-300 px-3 py-2 text-gray-900"
+            className="min-h-11 w-full rounded-xl border border-gray-300 bg-white px-3 text-gray-950 shadow-sm transition placeholder:text-gray-400 hover:border-gray-400 focus:border-gray-950 focus:outline-none focus:ring-4 focus:ring-gray-200"
           />
         </div>
 
         <button
           onClick={handleSend}
           disabled={busy || !destination || !amount}
-          className="w-full rounded bg-emerald-600 py-3 font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-100 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {STATUS_LABEL[status]}
         </button>
       </div>
 
       {status === 'success' && (
-        <div className="mt-4 rounded border border-emerald-200 bg-emerald-50 p-3">
-          <p className="font-medium text-emerald-700">Payment confirmed!</p>
+        <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+          <p className="font-medium text-emerald-700">Payment confirmed.</p>
           <a
             href={`https://stellar.expert/explorer/testnet/tx/${txHash}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="break-all text-sm text-indigo-600 hover:underline"
+            className="mt-1 block break-all text-sm text-gray-700 underline decoration-emerald-300 underline-offset-4 hover:text-gray-950"
           >
-            View on Stellar Expert →
+            View on Stellar Expert
           </a>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="mt-4 rounded border border-red-200 bg-red-50 p-3">
+        <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
           <p className="text-sm text-red-700">{errorMsg}</p>
         </div>
       )}

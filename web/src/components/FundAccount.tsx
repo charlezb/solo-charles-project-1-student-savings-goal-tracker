@@ -30,11 +30,11 @@ export default function FundAccount({
       <button
         onClick={fund}
         disabled={loading}
-        className="rounded bg-amber-400 px-3 py-1.5 text-sm font-medium text-amber-950 transition-colors hover:bg-amber-500 disabled:opacity-50"
+        className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-900 transition hover:-translate-y-0.5 hover:bg-amber-200 focus:outline-none focus:ring-4 focus:ring-amber-100 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? 'Funding…' : 'Fund with Friendbot (testnet)'}
+        {loading ? 'Funding...' : 'Fund with Friendbot'}
       </button>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 }

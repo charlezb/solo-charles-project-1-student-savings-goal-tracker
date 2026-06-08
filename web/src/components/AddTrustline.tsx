@@ -30,7 +30,11 @@ export default function AddTrustline({
   };
 
   if (status === 'done') {
-    return <p className="text-sm text-emerald-600">USDC trustline added.</p>;
+    return (
+      <p className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700">
+        USDC trustline added.
+      </p>
+    );
   }
 
   return (
@@ -38,11 +42,11 @@ export default function AddTrustline({
       <button
         onClick={add}
         disabled={status === 'working'}
-        className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+        className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:-translate-y-0.5 hover:border-gray-300 hover:text-gray-950 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === 'working' ? 'Adding USDC trustline…' : 'Add USDC trustline'}
+        {status === 'working' ? 'Adding trustline...' : 'Add USDC trustline'}
       </button>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 }
