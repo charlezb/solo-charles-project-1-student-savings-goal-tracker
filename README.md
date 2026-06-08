@@ -1,12 +1,33 @@
-# Student Savings Goal Tracker
+## Project Name
 
-A Soroban-powered web application that allows students to create savings goals and track their progress on-chain using the Stellar blockchain.
+Student Savings Goal Tracker
+
+## One-Line Description
+
+A Soroban-powered web application that helps students create savings goals and track their progress transparently on the Stellar blockchain.
 
 ## Problem
 
 Many students struggle to stay consistent with saving money for important expenses such as tuition, laptops, school supplies, and emergency funds. Traditional note-taking apps and spreadsheets can track progress, but they do not provide a transparent and verifiable record of savings milestones.
 
 Student Savings Goal Tracker provides a simple way for students to create a savings goal and record their progress on-chain using Stellar Soroban smart contracts.
+
+## Novelty Note (optional, for bonus points)
+
+While savings trackers already exist as traditional web and mobile applications, this project demonstrates how savings goal tracking can be implemented using Soroban smart contracts on Stellar. Instead of relying solely on local or centralized storage, savings progress is recorded on-chain, creating a transparent and verifiable history of goal updates. The project also serves as an educational example of how Stellar can support financial inclusion and responsible money management for students.
+
+## Anything Else
+
+Current implementation focuses on savings goal tracking and smart contract interaction. Future improvements may include:
+
+* Goal categories and descriptions
+* Savings deadlines and milestones
+* Contribution history
+* Multi-user support
+* USDC integration
+* Real on-chain savings vault functionality using Stellar assets
+
+Built during the StellarX Philippines Soroban Workshop and extended from the official workshop starter template.
 
 ## How It Works
 
@@ -134,4 +155,5 @@ http://localhost:3000
 ## Acknowledgements
 
 Built during the StellarX Philippines Soroban Workshop using the official workshop starter template and extended with custom smart contract and frontend functionality.
+
 
