@@ -1,134 +1,137 @@
-# StellarX Workshop Starter
+# Student Savings Goal Tracker
 
-A ready-to-run scaffold for the **StellarX PH workshop @ PUP QC**. It gives you a
-working Stellar app on **testnet** so you can spend the workshop bending it toward
-your own idea instead of fighting setup.
+A Soroban-powered web application that allows students to create savings goals and track their progress on-chain using the Stellar blockchain.
 
-It covers **both** workshop tracks:
+## Problem
 
-- **Fullstack payments** — a Next.js app: connect Freighter → fund via Friendbot →
-  view XLM/USDC balances → send a payment → confirm on-chain.
-- **Soroban smart contract** — a small Rust contract (a *Savings Goal* tracker)
-  you build, test, deploy with the Stellar CLI, and call from the same frontend.
+Many students struggle to stay consistent with saving money for important expenses such as tuition, laptops, school supplies, and emergency funds. Traditional note-taking apps and spreadsheets can track progress, but they do not provide a transparent and verifiable record of savings milestones.
 
+Student Savings Goal Tracker provides a simple way for students to create a savings goal and record their progress on-chain using Stellar Soroban smart contracts.
+
+## How It Works
+
+1. Connect a Stellar wallet using Freighter.
+2. Create a savings goal by entering:
+
+   * Goal Name
+   * Target Amount
+3. The goal is stored on-chain through a Soroban smart contract.
+4. Users can contribute progress toward the goal.
+5. The application updates and displays:
+
+   * Goal Name
+   * Current Saved Amount
+   * Target Amount
+   * Progress Percentage
+6. All goal state updates are recorded through the deployed smart contract.
+
+## How It Uses Stellar
+
+This project uses Stellar Soroban smart contracts to store and manage savings goal data on-chain.
+
+Features include:
+
+* Soroban smart contract deployment on Stellar Testnet
+* On-chain storage of savings goal information
+* Contract state updates through Soroban transactions
+* Freighter wallet integration for transaction signing
+* Stellar SDK integration for blockchain interaction
+
+The smart contract currently functions as a savings progress tracker rather than a custodial savings vault. No XLM or token deposits are held by the contract.
+
+## Track
+
+Track 5 – Social Impact
+
+## Tech Stack
+
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+* Soroban Smart Contracts
+* Rust
+* Stellar SDK
+* Freighter Wallet
+* Stellar Testnet
+
+## Setup & Run
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/charlezb/solo-charles-project-1-student-savings-goal-tracker.git
+cd student-savings-goal-tracker
 ```
-.
-├── web/                      # Next.js 16 + TypeScript + Tailwind frontend
-├── contracts/savings-goal/   # Rust Soroban contract (init / contribute / get_state)
-├── scripts/                  # deploy.ps1 (Windows) / deploy.sh
-├── Cargo.toml                # Rust workspace
-└── CLAUDE.md                 # stack notes + Stellar gotchas (read this!)
+
+### Install Dependencies
+
+```bash
+npm install
 ```
 
-## Prerequisites
+### Configure Environment Variables
 
-From the [workshop setup checklist](https://stellar-pup-qc-may-2026-checklist.vercel.app/):
+Create:
 
-- **Node.js 20+** and **npm** — for the frontend.
-- **Freighter** browser extension — create a wallet, switch it to **Test Net**.
-- For the contract track: **Rust**, the `wasm32v1-none` target, and the **Stellar CLI**.
-
-You can run the **payments demo with just Node + Freighter** — Rust/CLI are only
-needed to deploy the Soroban contract.
-
-### Install the contract toolchain (Windows)
-
-Install Rust and the Stellar CLI:
-
-```powershell
-winget install --id Rustlang.Rustup -e --accept-source-agreements --accept-package-agreements
-winget install --id Stellar.StellarCLI -e --accept-source-agreements --accept-package-agreements
+```bash
+web/.env.local
 ```
 
-Then **open a new terminal** (so `cargo`/`stellar` land on PATH) and give Rust a
-working linker — pick one:
+Add:
 
-**Easiest — GNU toolchain** (no admin, no large download):
-
-```powershell
-rustup default stable-x86_64-pc-windows-gnu
-rustup target add wasm32v1-none
+```env
+NEXT_PUBLIC_CONTRACT_ID=YOUR_CONTRACT_ID
 ```
 
-**Or MSVC** (matches Stellar's docs): install the **Visual C++ Build Tools** (the
-"Desktop development with C++" workload), then:
+### Run Development Server
 
-```powershell
-rustup target add wasm32v1-none
-```
-
-> If `cargo` fails with *"linker `link.exe` not found"*, you skipped the step
-> above — use the GNU toolchain or install the Build Tools.
-
-On macOS/Linux: install Rust from <https://rustup.rs>, run
-`rustup target add wasm32v1-none`, and install the Stellar CLI
-(`brew install stellar-cli`).
-
-## 1. Run the frontend (the part that demos immediately)
-
-```powershell
-cd web
-npm install        # already run if you scaffolded via this repo
+```bash
 npm run dev
 ```
 
-Open <http://localhost:3000>, then:
+Open:
 
-1. **Connect Freighter** (approve in the extension; make sure it's on Test Net).
-2. **Fund with Friendbot** — your XLM balance jumps to ~10,000.
-3. **Send a payment** to another *existing, funded* testnet account
-   (create one at <https://laboratory.stellar.org/#account-creator?network=test>).
-4. Watch the status go Building → Signing → Submitting → Confirming → Success,
-   then open the **Stellar Expert** link to see it on-chain.
-
-`web/.env.local` is pre-filled with testnet config. `NEXT_PUBLIC_CONTRACT_ID` is
-left empty — the Savings Goal panel shows deploy instructions until you set it.
-
-## 2. Build, test & deploy the Soroban contract
-
-```powershell
-# from the repo root
-cargo test                 # runs the contract unit tests (no network needed)
-
-# deploy to testnet + auto-wire the contract ID into web/.env.local
-.\scripts\deploy.ps1       # macOS/Linux:  ./scripts/deploy.sh
+```text
+http://localhost:3000
 ```
 
-The deploy script will: create+fund a testnet identity (if needed), run
-`stellar contract build`, deploy, initialise the goal (target `1000`), and write
-`NEXT_PUBLIC_CONTRACT_ID` into `web/.env.local`. **Restart `npm run dev`** and the
-**Savings Goal** panel goes live: it reads on-chain progress and lets a connected
-wallet `contribute` (a real signed Soroban transaction).
+### Requirements
 
-### The contract (`contracts/savings-goal/src/lib.rs`)
+* Node.js v24+
+* Rust
+* Stellar CLI
+* Freighter Wallet
 
-| Function | Purpose |
-|---|---|
-| `init(target: i128)` | Set the savings target (once). |
-| `contribute(amount: i128) -> i128` | Add to the saved total; returns the new total. |
-| `get_state() -> State` | Read `{ saved, target }`. |
+## Network Details
 
-It uses plain integer state (no token transfers) so it's bulletproof in a live
-demo. To make it move real money, swap `contribute` to call the XLM/USDC SAC
-`transfer` and store per-user contributions — see CLAUDE.md for the SAC addresses.
+* Network: Stellar Testnet
+* Contract ID: CBVWBSXB5MPZRJOYEHIAWTF5WTSIGH7JIY7DPZMQSHVEIH7E5L3GHLM3
+* Wallet: Freighter
 
-## 3. Make it your idea
+## Current Features
 
-This is your *starting point*, not the answer. Pick an idea + track from the
-workshop's 300-ideas list (Philippines remittance / payments / financial
-inclusion themes score well), then reshape the components and the contract.
-Good extension paths: transaction history from Horizon, USDC trustline + send,
-a swap via Soroswap, a price feed via Reflector.
+* Wallet Connection
+* Goal Creation
+* On-Chain Goal Storage
+* Contribution Tracking
+* Progress Visualization
+* Soroban Smart Contract Integration
 
-For a fully worked example built on this scaffold, see the **Paluwagan** app in
-`..\Stellar-Workshop-PUP-May-2026-EXAMPLE`.
+## Future Improvements
 
-## Troubleshooting
+* Goal Description
+* Goal Categories
+* Deadlines and Milestones
+* Contribution History
+* Multi-user Support
+* Real XLM/USDC Savings Vault Functionality
 
-- **Freighter "not detected"** — install it, reload the page, and confirm it's unlocked.
-- **Payment fails `op_no_destination`** — fund the destination account first.
-- **`tx_bad_auth`** — wrong network passphrase; this app uses `Networks.TESTNET`.
-- **Contract panel can't read state** — make sure you deployed *and* ran `init`,
-  and that `NEXT_PUBLIC_CONTRACT_ID` is set, then restart the dev server.
+## Team
 
-See **CLAUDE.md** for the full list of Stellar gotchas.
+* Charles Betonio - charlezb
+
+## Acknowledgements
+
+Built during the StellarX Philippines Soroban Workshop using the official workshop starter template and extended with custom smart contract and frontend functionality.
+
